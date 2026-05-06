@@ -6,7 +6,9 @@ function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div style={{
+    <motion.div
+      exit = {{opacity:0}}
+      style ={{
       height: '100vh',
       display: 'flex',
       alignItems: 'center',
@@ -33,6 +35,7 @@ function Landing() {
       >
         <motion.h1
           className="dumpy-title"
+          
           style={{ fontSize: '96px', marginBottom: '24px' }}
         >
           Dumpy
@@ -68,7 +71,7 @@ function Landing() {
           Get Started!
         </motion.button>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
 
