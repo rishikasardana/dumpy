@@ -94,9 +94,11 @@ def create_schedule(request: ScheduleRequest):
 @app.get("/auth/login")
 def login():
     flow = get_flow('https://dumpy-backend.onrender.com/auth/callback')
+    flow.code_verifier = None
     auth_url, state = flow.authorization_url(
         prompt='consent',
-        access_type='offline'
+        access_type='offline',
+        include_granted_scopes='true'
     )
     flow_store[state] = flow
     return {"auth_url": auth_url}
