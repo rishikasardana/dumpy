@@ -14,7 +14,7 @@ function TaskDump({ setSchedule }) {
   const handleSchedule = async () => {
     localStorage.setItem('dumpy_start_time', startTime);
     localStorage.setItem('dumpy_end_time', endTime);
-    const response = await axios.post('http://127.0.0.1:8000/schedule', {
+    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/schedule`, {
       tasks: tasks,
       start_time: startTime,
       end_time: endTime,
