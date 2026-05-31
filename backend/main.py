@@ -4,6 +4,14 @@ from pydantic import BaseModel
 import anthropic
 import os
 from dotenv import load_dotenv
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
+import json
+import secrets
+from fastapi.responses import RedirectResponse
+
+flow_store = {}
 
 load_dotenv()
 
@@ -33,6 +41,8 @@ def create_schedule(request: ScheduleRequest):
     Their day starts at: {request.start_time}
     Their day ends at: {request.end_time}
     Blocked time (nothing scheduled here): {request.block_start} to {request.block_end}
+    IMPORTANT: You must not schedule ANY task during the blocked time. This is a hard rule, no exceptions.
+
     
     Their tasks:
     {request.tasks}
@@ -59,4 +69,57 @@ def create_schedule(request: ScheduleRequest):
         messages=[{"role": "user", "content": prompt}]
     )
 
+    
     return {"schedule": message.content[0].text}
+
+
+
+
+@app.get("/auth/login")
+def login():
+    flow = Flow.from_client_secrets_file(
+        'credentials.json',
+        scopes=['https://www.googleapis.com/auth/calendar'],
+        redirect_uri='http://localhost:8000/auth/callback'
+    )
+    auth_url, state = flow.authorization_url(
+        prompt='consent',
+        access_type='offline'
+    )
+    flow_store[state] = flow
+    return {"auth_url": auth_url}
+
+
+@app.get("/auth/callback")
+def callback(code: str, state: str):
+    flow = flow_store.get(state)
+    flow.fetch_token(code=code)
+    credentials = flow.credentials
+    return RedirectResponse(
+        url=f"http://localhost:3000/success?token={credentials.token}"
+    )
+
+class CalendarRequest(BaseModel):
+    schedule: list
+    token: str
+
+@app.post("/add-to-calendar")
+def add_to_calendar(request: CalendarRequest):
+    credentials = Credentials(token=request.token)
+    service = build('calendar', 'v3', credentials=credentials)
+    
+    from datetime import datetime, timedelta
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    for item in request.schedule:
+        time_obj = datetime.strptime(f"{today} {item['time']}", '%Y-%m-%d %I:%M %p')
+        end_time = time_obj + timedelta(hours=1)
+        
+        event = {
+            'summary': item['task'],
+            'start': {'dateTime': time_obj.isoformat(), 'timeZone': 'America/Phoenix'},
+            'end': {'dateTime': end_time.isoformat(), 'timeZone': 'America/Phoenix'},
+        }
+        service.events().insert(calendarId='primary', body=event).execute()
+    
+    return {"status": "success"}

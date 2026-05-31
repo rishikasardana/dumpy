@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 
 function TaskDump({ setSchedule }) {
   const navigate = useNavigate();
@@ -10,6 +11,23 @@ function TaskDump({ setSchedule }) {
   const [blockStart, setBlockStart] = useState('');
   const [blockEnd, setBlockEnd] = useState('');
 
+  const handleSchedule = async () => {
+    console.log('block start:', blockStart, 'block end:', blockEnd);
+    const response = await axios.post('http://127.0.0.1:8000/schedule', {
+      tasks: tasks,
+      start_time: startTime,
+      end_time: endTime,
+      block_start: blockStart,
+      block_end: blockEnd,
+    });
+  
+    const cleaned = response.data.schedule.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    setSchedule(parsed);
+    navigate('/preview');
+  };
+  
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -150,7 +168,7 @@ function TaskDump({ setSchedule }) {
 
             {/* Schedule button */}
             <button
-            onClick={() => navigate('/preview')}
+            onClick={handleSchedule}
             style={{
                 width: '100%',
                 padding: '16px',
