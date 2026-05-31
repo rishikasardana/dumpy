@@ -13,3 +13,9 @@ body {
   font-family: 'Pacifico', cursive;
   color: #E34A35;
 }
+
+button:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}

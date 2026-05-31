@@ -12,7 +12,8 @@ function TaskDump({ setSchedule }) {
   const [blockEnd, setBlockEnd] = useState('');
 
   const handleSchedule = async () => {
-    console.log('block start:', blockStart, 'block end:', blockEnd);
+    localStorage.setItem('dumpy_start_time', startTime);
+    localStorage.setItem('dumpy_end_time', endTime);
     const response = await axios.post('http://127.0.0.1:8000/schedule', {
       tasks: tasks,
       start_time: startTime,
@@ -20,12 +21,13 @@ function TaskDump({ setSchedule }) {
       block_start: blockStart,
       block_end: blockEnd,
     });
-  
     const cleaned = response.data.schedule.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(cleaned);
     setSchedule(parsed);
     navigate('/preview');
   };
+  
+ 
   
   
   return (
@@ -192,6 +194,6 @@ function TaskDump({ setSchedule }) {
 
     </motion.div>
   );
-}
 
+}
 export default TaskDump;

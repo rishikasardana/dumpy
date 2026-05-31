@@ -53,16 +53,17 @@ function Preview({ schedule }) {
               backgroundColor: '#F1C4A5',
             }} />
 
-            {Array.from({ length: 15 }, (_, i) => i + 8).map((hour) => {
-              const timeLabel = hour < 12 ? `${hour}:00 am` : hour === 12 ? '12:00 pm' : `${hour - 12}:00 pm`;
+            {Array.from({ length: 32 }, (_, i) => i).map((slot) => {
+              const startHour = 6;
+              const hour = Math.floor(slot / 2) + startHour;
+              const minutes = slot % 2 === 0 ? '00' : '30';
+              const timeLabel = hour < 12 ? `${hour}:${minutes} am` : hour === 12 ? `12:${minutes} pm` : `${hour - 12}:${minutes} pm`;
               const matchingTask = schedule && schedule.find(item => {
-                const t = item.time.toLowerCase();
-                const h = hour < 12 ? `${hour}:00 am` : hour === 12 ? '12:00 pm' : `${hour - 12}:00 pm`;
-                return t === h;
+                return item.time.toLowerCase() === timeLabel.toLowerCase();
               });
 
               return (
-                <div key={hour} style={{
+                <div key={slot} style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',

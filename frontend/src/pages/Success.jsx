@@ -34,7 +34,7 @@ useEffect(() => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}ß
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       style={{
         minHeight: '100vh',
@@ -58,19 +58,41 @@ useEffect(() => {
       </motion.div>
 
       <div style={{ textAlign: 'center', padding: '40px' }}>
-        {status === 'adding' && (
-          <p style={{ fontSize: '24px', color: '#5b3f34' }}>Adding to your calendar...</p>
+      {status === 'adding' && (
+        <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            style={{
+            width: '60px', height: '60px', borderRadius: '50%',
+            border: '4px solid #ffa9bb',
+            borderTop: '4px solid #E34A35',
+            margin: '0 auto 24px',
+            }}
+        />
         )}
+
         {status === 'done' && (
           <>
-            <div style={{
-              width: '80px', height: '80px', borderRadius: '50%',
-              backgroundColor: '#ffa9bb', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 24px',
-            }}>
-              <span style={{ fontSize: '40px' }}>✓</span>
-            </div>
+            <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+                style={{
+                    width: '80px', height: '80px', borderRadius: '50%',
+                    backgroundColor: '#ffa9bb', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    margin: '0 auto 24px',
+                }}
+                >
+                <motion.span
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+                    style={{ fontSize: '40px' }}
+                >
+                     ✓
+                </motion.span>
+                </motion.div>
             <p style={{ fontSize: '28px', fontWeight: '500', color: '#5b3f34', marginBottom: '8px' }}>You're all set!</p>
             <p style={{ fontSize: '16px', color: '#5b3f34', opacity: 0.6, marginBottom: '32px' }}>
               Your tasks have been added to Google Calendar!
