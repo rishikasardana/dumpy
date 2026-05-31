@@ -120,8 +120,11 @@ def add_to_calendar(request: CalendarRequest):
     credentials = Credentials(token=request.token)
     service = build('calendar', 'v3', credentials=credentials)
     
+    
     from datetime import datetime, timedelta
-    today = datetime.now().strftime('%Y-%m-%d')
+    import pytz
+    tz = pytz.timezone('America/Phoenix')
+    today = datetime.now(tz).strftime('%Y-%m-%d')
     
     for item in request.schedule:
         time_obj = datetime.strptime(f"{today} {item['time']}", '%Y-%m-%d %I:%M %p')
