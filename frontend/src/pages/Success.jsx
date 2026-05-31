@@ -18,7 +18,7 @@ useEffect(() => {
   const savedSchedule = JSON.parse(localStorage.getItem('dumpy_schedule'));
 
   if (token && savedSchedule) {
-    axios.post('http://127.0.0.1:8000/add-to-calendar', {
+    axios.post(`${process.env.REACT_APP_BACKEND_URL}/add-to-calendar`, {
       schedule: savedSchedule,
       token: token,
     }).then(() => {

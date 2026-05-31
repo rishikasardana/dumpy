@@ -148,7 +148,7 @@ function Preview({ schedule }) {
           <button
             onClick={async () => {
               localStorage.setItem('dumpy_schedule', JSON.stringify(schedule));
-              const loginRes = await axios.get('http://127.0.0.1:8000/auth/login');
+              const loginRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/login`);
               window.location.href = loginRes.data.auth_url;
             }}
             style={{
