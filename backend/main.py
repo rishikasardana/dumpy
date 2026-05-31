@@ -11,6 +11,22 @@ import json
 import secrets
 from fastapi.responses import RedirectResponse
 
+def get_flow(redirect_uri):
+    credentials_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
+    if credentials_json:
+        client_config = json.loads(credentials_json)
+        return Flow.from_client_config(
+            client_config,
+            scopes=['https://www.googleapis.com/auth/calendar'],
+            redirect_uri=redirect_uri
+        )
+    else:
+        return Flow.from_client_secrets_file(
+            'credentials.json',
+            scopes=['https://www.googleapis.com/auth/calendar'],
+            redirect_uri=redirect_uri
+        )
+
 flow_store = {}
 
 load_dotenv()
@@ -77,11 +93,7 @@ def create_schedule(request: ScheduleRequest):
 
 @app.get("/auth/login")
 def login():
-    flow = Flow.from_client_secrets_file(
-        'credentials.json',
-        scopes=['https://www.googleapis.com/auth/calendar'],
-        redirect_uri='http://localhost:8000/auth/callback'
-    )
+    flow = get_flow('http://localhost:8000/auth/callback')
     auth_url, state = flow.authorization_url(
         prompt='consent',
         access_type='offline'
