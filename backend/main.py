@@ -93,7 +93,7 @@ def create_schedule(request: ScheduleRequest):
 
 @app.get("/auth/login")
 def login():
-    flow = get_flow('http://localhost:8000/auth/callback')
+    flow = get_flow('https://dumpy-backend.onrender.com/auth/callback')
     auth_url, state = flow.authorization_url(
         prompt='consent',
         access_type='offline'
@@ -108,7 +108,7 @@ def callback(code: str, state: str):
     flow.fetch_token(code=code)
     credentials = flow.credentials
     return RedirectResponse(
-        url=f"http://localhost:3000/success?token={credentials.token}"
+         url=f"https://dumpy-umber.vercel.app/success?token={credentials.token}"
     )
 
 class CalendarRequest(BaseModel):
