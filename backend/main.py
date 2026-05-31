@@ -15,17 +15,19 @@ def get_flow(redirect_uri):
     credentials_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
     if credentials_json:
         client_config = json.loads(credentials_json)
-        return Flow.from_client_config(
+        flow = Flow.from_client_config(
             client_config,
             scopes=['https://www.googleapis.com/auth/calendar'],
             redirect_uri=redirect_uri
         )
     else:
-        return Flow.from_client_secrets_file(
+        flow = Flow.from_client_secrets_file(
             'credentials.json',
             scopes=['https://www.googleapis.com/auth/calendar'],
             redirect_uri=redirect_uri
         )
+    flow.code_verifier = None
+    return flow
 
 flow_store = {}
 
@@ -94,11 +96,9 @@ def create_schedule(request: ScheduleRequest):
 @app.get("/auth/login")
 def login():
     flow = get_flow('https://dumpy-backend.onrender.com/auth/callback')
-    flow.code_verifier = None
     auth_url, state = flow.authorization_url(
         prompt='consent',
-        access_type='offline',
-        include_granted_scopes='true'
+        access_type='offline'
     )
     flow_store[state] = flow
     return {"auth_url": auth_url}
