@@ -1,10 +1,10 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { motion } from 'framer-motion';
 import axios from 'axios';
 
 function Preview({ schedule }) {
-  const navigate = useNavigate();
+  
 
   return (
     <motion.div
